@@ -48,7 +48,7 @@ public:
 
 template<class T>
 class BinarySearchTree {
-private:
+public:
     void Insert(T X, Node<T>* &SubTree); // Insert a value in the BST
     void InOrderTraversing(Node<T>* SubTree); // In Order Traversing the Tree (Left -> Parent -> Right)
     void PreOrderTraversing(Node<T>* SubTree); // Pre Order Traversing the Tree (Parent -> Left -> Right)
