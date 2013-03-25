@@ -48,21 +48,51 @@ public:
 
 template<class T>
 class BinarySearchTree {
-public:
+private:
     void Insert(T X, Node<T>* &SubTree); // Insert a value in the BST
     void InOrderTraversing(Node<T>* SubTree); // In Order Traversing the Tree (Left -> Parent -> Right)
     void PreOrderTraversing(Node<T>* SubTree); // Pre Order Traversing the Tree (Parent -> Left -> Right)
     void PostOrderTraversing(Node<T>* SubTree); // Post Order Traversing thr Tree(Left -> Right -> Parent)
     bool Find(T X, Node<T>* SubTree); // bool Function that returns true if it finds a specefic value and returns false otherwise
+    int Level(T X, Node<T>* Root); // Returns the Depth(Level) of the tree
+    bool DeleteValue(T X, Node<T>* SubTree); // Delete Value in BST
+    bool IsEmpty(Node<T>* SubTree); // Check that is the Tree Empty or Not     
+public:
+    Node<T>* Parent;
+    BinarySearchTree() { Parent = NULL; }
     Node<T> *FindNode(T X, Node<T>* SubTree); // Returns the Specific Node
     void DeleteNode(Node<T>* &Nodex); // Delete a Node
-    int Level(T X, Node<T>* Root); // Returns the Depth(Level) of the tree
     bool IsBST(Node<T>* SubTree); // Check that is it a BST or Not
-    bool IsEmpty(Node<T>* Root); // Check that is the Tree Empty or Not 
     T MinimumValue(Node<T>* SubTree); // Returns the Minimum Value of the BST
     T MaximumValue(Node<T>* SubTree); // Returns the Maximum Value of the BST
+public:
+    void insert(T X) {
+        Insert(X, Parent);
+    }
+    void inOrderTraversing() {
+        InOrderTraversing(Parent);
+    }
+    bool find(T X) {
+        Find(X, Parent);
+    }
+    void preOrderTraversing() {
+        PreOrderTraversing(Parent);
+    }
+    void postOrderTraversing() {
+        PostOrderTraversing(Parent);
+    }
+    int depth(T X) {
+        if(!find(X))    return -1;
+        return Level(X, Parent);
+    }
+    bool remove(T X) {
+        DeleteValue(X, Parent);
+    }
+    bool isEmpty() {
+        IsEmpty(Parent);
+    }
+        
 };
-
 
 /* To Insert an value in the BST .. we have 3 cases
  * 1)there is no Subtree .. then we will build a new one
@@ -78,6 +108,27 @@ void BinarySearchTree<T>::Insert(T X, Node<T>* &SubTree) {
     }
     if(X < SubTree->Data)       Insert(X, SubTree->Left);
     else                        Insert(X, SubTree->Right);
+}
+
+/*
+ * Deleting a value from a BST .. first check if there is a subtree or no
+ * then we search for the value .. if we reached to it .. then Delete its Node
+ */
+template<class T>
+bool BinarySearchTree<T>::DeleteValue(T X, Node<T>* SubTree) {
+    if(SubTree == NULL) return false;
+    if(SubTree->Data == X) {
+        DeleteNode(SubTree);
+        return true;
+    } else {
+        Node<T> *Temp = FindNode(X, SubTree);
+        if(Temp == NULL)        return false;
+        else {
+            if(Temp->Left->Data == X)   DeleteNode(Temp->Left);
+            else                        DeleteNode(Temp->Right);
+            return true;
+        }
+    }
 }
 
 template<class T>
@@ -116,7 +167,7 @@ template<class T>
 bool BinarySearchTree<T>::Find(T X, Node<T>* SubTree) {
     if(SubTree == NULL) return false;
     if(SubTree->Data == X)      return true;
-    else if(X < SubTree->Left)  return Find(X, SubTree->Left);
+    else if(X < SubTree->Left->Data)  return Find(X, SubTree->Left);
     else                        return Find(X, SubTree->Right);
 }
 
@@ -141,7 +192,7 @@ Node<T>* BinarySearchTree<T>::FindNode(T X, Node<T>* SubTree) {
 }
 
 /*
- * Well, i remmber it took me many a while to find out how to delete a Node in BST .. and remain it as a BST :D
+ * Well, i remmber it took me a while to find out how to delete a Node in BST .. and remain it as a BST :D
  * we have 4 Cases in deleting a Node from a BST .. 
  * 1) the node we want to delete is a leaf node(has no Children) .. then easily we can Delete it.
  * 2) the node has no Right Children .. then we can create a Temp Node that will hold the Left Chilren of the node .. then delete the node
@@ -188,7 +239,7 @@ void BinarySearchTree<T>::DeleteNode(Node<T>* &Nodex) {
 template<class T>
 int BinarySearchTree<T>::Level(T X, Node<T>* Root) {
     if(Root->Data == X)      return 0;
-    else if(X < Root->Left)  return 1 + Level(X, Root->Left);
+    else if(X < Root->Left->Data)  return 1 + Level(X, Root->Left);
     else                        return 1 + Level(X, Root->Right);
 }
 
@@ -216,8 +267,7 @@ T BinarySearchTree<T>::MaximumValue(Node<T>* SubTree) {
 }
 
 /*
- * Minimum Value .. like the Maximum Function .. 
- * but here we want the Minimum Value which msut be at the final Left Child
+ * Minimum Value .. like the Maximum Function .. but here we want the Minimum Value which msut be at the final Left Child
  */
 template<class T>
 T BinarySearchTree<T>::MinimumValue(Node<T>* SubTree) {
@@ -230,8 +280,8 @@ T BinarySearchTree<T>::MinimumValue(Node<T>* SubTree) {
  * if there is no Root .. then the BST has no Children .. which mean that the BST is Empty
  */
 template<class T>
-bool BinarySearchTree<T>::IsEmpty(Node<T>* Root) {
-    return (Root == NULL);
+bool BinarySearchTree<T>::IsEmpty(Node<T>* SubTree) {
+    return (SubTree == NULL);
 }
 
 int main(int argc, char** argv) {
@@ -240,4 +290,3 @@ int main(int argc, char** argv) {
     
     return 0;
 }
-
